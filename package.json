@@ -1,6 +1,6 @@
 {
-  "name": "react-big-calendar",
-  "version": "1.8.2",
+  "name": "@denindka/react-big-calendar",
+  "version": "1.8.7",
   "description": "Calendar! with events",
   "author": {
     "name": "Jason Quense",
@@ -14,6 +14,7 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
+  "types": "@types/react-big-calendar",
   "license": "MIT",
   "main": "lib/index.js",
   "module": "dist/react-big-calendar.esm.js",
