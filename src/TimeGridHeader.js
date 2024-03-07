@@ -170,6 +170,7 @@ class TimeGridHeader extends React.Component {
             >
               {this.renderHeaderCells(range)}
             </div>
+
             <DateContentRow
               isAllDay
               rtl={rtl}

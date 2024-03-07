@@ -170,10 +170,9 @@ export class DateLocalizer {
     this.firstVisibleDay = spec.firstVisibleDay || firstVisibleDay
     this.lastVisibleDay = spec.lastVisibleDay || lastVisibleDay
     this.visibleDays = spec.visibleDays || visibleDays
-
     this.getSlotDate = spec.getSlotDate || getSlotDate
     this.getTimezoneOffset =
-      spec.getTimezoneOffset || (value => value.getTimezoneOffset())
+      spec.getTimezoneOffset || ((value) => value.getTimezoneOffset())
     this.getDstOffset = spec.getDstOffset || getDstOffset
     this.getTotalMin = spec.getTotalMin || getTotalMin
     this.getMinutesFromMidnight =

@@ -3,10 +3,10 @@ const now = new Date()
 export default [
   {
     id: 0,
-    title: 'All Day Event very long title',
-    allDay: true,
-    start: new Date(2015, 3, 0),
-    end: new Date(2015, 3, 1),
+    title: 'Al =================== al',
+    allDay: false,
+    start: new Date('2023-11-29T14:10:09.242Z'),
+    end: new Date('2023-11-29T16:10:09.242Z'),
   },
   {
     id: 1,

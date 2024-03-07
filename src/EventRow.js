@@ -21,7 +21,9 @@ class EventRow extends React.Component {
 
           let content = EventRowMixin.renderEvent(this.props, event)
 
-          if (gap) row.push(EventRowMixin.renderSpan(slots, gap, `${key}_gap`))
+          if (gap) {
+            row.push(EventRowMixin.renderSpan(slots, gap, `${key}_gap`))
+          }
 
           row.push(EventRowMixin.renderSpan(slots, span, key, content))
 

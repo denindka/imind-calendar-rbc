@@ -92,6 +92,14 @@
   z-index: 4;
 }
 
+.chevron-show-more {
+  position: absolute;
+  left: -25px;
+  bottom: 0;
+  cursor: pointer;
+  transition: 1s linear;
+}
+
 .rbc-row-content-scrollable {
   display: flex;
   flex-direction: column;

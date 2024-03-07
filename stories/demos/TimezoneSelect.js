@@ -5,6 +5,7 @@ import moment from 'moment'
 import 'moment-timezone'
 
 const allZones = moment.tz.names()
+
 allZones.unshift('clear')
 
 export default function TimezoneSelect({

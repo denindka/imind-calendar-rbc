@@ -183,6 +183,7 @@ export default function DnDOutsideResource({ localizer }) {
           onSelectSlot={newEvent}
           resizable
           selectable
+          allDayMaxRows={2}
         />
       </div>
     </Fragment>

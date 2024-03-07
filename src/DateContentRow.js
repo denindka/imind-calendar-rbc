@@ -18,26 +18,28 @@ class DateContentRow extends React.Component {
     this.containerRef = createRef()
     this.headingRowRef = createRef()
     this.eventRowRef = createRef()
-
+    this.state = { showAllEvents: false }
     this.slotMetrics = DateSlotMetrics.getSlotMetrics()
+    this.eventHeight = 0
   }
 
   handleSelectSlot = (slot) => {
     const { range, onSelectSlot } = this.props
-
     onSelectSlot(range.slice(slot.start, slot.end + 1), slot)
   }
 
   handleShowMore = (slot, target) => {
-    const { range, onShowMore } = this.props
-    let metrics = this.slotMetrics(this.props)
-    let row = qsa(this.containerRef.current, '.rbc-row-bg')[0]
-
-    let cell
-    if (row) cell = row.children[slot - 1]
-
-    let events = metrics.getEventsForSlot(slot)
-    onShowMore(events, range[slot - 1], cell, slot, target)
+    if (this.props.isAllDay) {
+      this.setState({ showAllEvents: !this.state.showAllEvents })
+    } else {
+      const { range, onShowMore } = this.props
+      let metrics = this.slotMetrics(this.props)
+      let row = qsa(this.containerRef.current, '.rbc-row-bg')[0]
+      let cell
+      if (row) cell = row.children[slot - 1]
+      let events = metrics.getEventsForSlot(slot)
+      onShowMore(events, range[slot - 1], cell, slot, target)
+    }
   }
 
   getContainer = () => {
@@ -47,13 +49,24 @@ class DateContentRow extends React.Component {
 
   getRowLimit() {
     /* Guessing this only gets called on the dummyRow */
-    const eventHeight = getHeight(this.eventRowRef.current)
+
+    const eventHeight = this.eventRowRef.current
+      ? getHeight(this.eventRowRef.current)
+      : this.eventHeight
+
+    this.eventHeight = eventHeight
+
     const headingHeight = this.headingRowRef?.current
       ? getHeight(this.headingRowRef.current)
       : 0
     const eventSpace = getHeight(this.containerRef.current) - headingHeight
 
-    return Math.max(Math.floor(eventSpace / eventHeight), 1)
+    const rowLimit = Math.max(Math.floor(eventSpace / (eventHeight + 1)), 1)
+    //  Math.floor(
+    //   Math.round(eventSpace) / Math.floor(eventHeight)
+    // )
+    //  Math.max(Math.floor(eventSpace / eventHeight), 1)
+    return rowLimit
   }
 
   renderHeadingCell = (date, index) => {
@@ -127,8 +140,13 @@ class DateContentRow extends React.Component {
 
     if (renderForMeasure) return this.renderDummy()
 
-    let metrics = this.slotMetrics(this.props)
-    let { levels, extra } = metrics
+    let metrics = this.slotMetrics({
+      ...this.props,
+      maxRows: this.state.showAllEvents ? Infinity : this.props.maxRows,
+      maxRowsStatic: this.props.maxRows,
+    })
+
+    let { levels, extra, extraStatic } = metrics
 
     let ScrollableWeekComponent = showAllEvents
       ? ScrollableWeekWrapper
@@ -151,6 +169,34 @@ class DateContentRow extends React.Component {
 
     return (
       <div className={className} role="rowgroup" ref={this.containerRef}>
+        {extraStatic.length > 1 && (
+          <div onClick={this.handleShowMore} className="chevron-show-more">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className={`icon icon-tabler ${
+                this.state.showAllEvents
+                  ? 'icon-tabler-chevron-up'
+                  : 'icon-tabler-chevron-down'
+              }`}
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              strokeWidth="2"
+              stroke="currentColor"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+
+              {this.state.showAllEvents ? (
+                <path d="M6 15l6 -6l6 6"></path>
+              ) : (
+                <path d="M6 9l6 6l6 -6"></path>
+              )}
+            </svg>
+          </div>
+        )}
         <BackgroundCells
           localizer={localizer}
           date={date}
@@ -167,7 +213,6 @@ class DateContentRow extends React.Component {
           longPressThreshold={longPressThreshold}
           resourceId={resourceId}
         />
-
         <div
           className={clsx(
             'rbc-row-content',
@@ -180,20 +225,27 @@ class DateContentRow extends React.Component {
               {range.map(this.renderHeadingCell)}
             </div>
           )}
-          <ScrollableWeekComponent>
-            <WeekWrapper isAllDay={isAllDay} {...eventRowProps} rtl={this.props.rtl}>
-              {levels.map((segs, idx) => (
-                <EventRow key={idx} segments={segs} {...eventRowProps} />
-              ))}
-              {!!extra.length && (
-                <EventEndingRow
-                  segments={extra}
-                  onShowMore={this.handleShowMore}
-                  {...eventRowProps}
-                />
-              )}
-            </WeekWrapper>
-          </ScrollableWeekComponent>
+          <div>
+            <ScrollableWeekComponent>
+              <WeekWrapper
+                isAllDay={isAllDay}
+                {...eventRowProps}
+                rtl={this.props.rtl}
+              >
+                {levels.map((segs, idx) => (
+                  <EventRow key={idx} segments={segs} {...eventRowProps} />
+                ))}
+
+                {!!extra.length && (
+                  <EventEndingRow
+                    segments={extra}
+                    onShowMore={this.handleShowMore}
+                    {...eventRowProps}
+                  />
+                )}
+              </WeekWrapper>
+            </ScrollableWeekComponent>
+          </div>
         </div>
       </div>
     )

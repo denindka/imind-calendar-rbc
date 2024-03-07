@@ -13,16 +13,23 @@ function getDate(str, DateTimeObj) {
   return DateTimeObj.fromISO(str).toJSDate()
 }
 
+const event = {
+  id: 13,
+  title: 'Multi-day Event',
+  start: new Date(2015, 3, 21, 8, 0, 0),
+  end: new Date(2015, 3, 23, 9, 0, 0),
+}
+
 export default function Luxon() {
   const [timezone, setTimezone] = useState(defaultTZ)
 
   const { defaultDate, getNow, localizer, myEvents, scrollToTime } =
     useMemo(() => {
-      Settings.defaultZone = timezone
+      Settings.defaultZone = 'UTC-12:00'
       return {
         defaultDate: getDate(defaultDateStr, DateTime),
         getNow: () => DateTime.local().toJSDate(),
-        localizer: luxonLocalizer(DateTime),
+        localizer: luxonLocalizer(DateTime, { firstDayOfWeek: 1 }),
         myEvents: [...events],
         scrollToTime: DateTime.local().toJSDate(),
       }
@@ -47,9 +54,15 @@ export default function Luxon() {
       <div className="height600">
         <Calendar
           defaultDate={defaultDate}
-          defaultView={Views.WEEK}
+          defaultView={Views.MONTH}
           events={myEvents}
           getNow={getNow}
+          views={{
+            day: true,
+            week: true,
+            work_week: true,
+            month: true,
+          }}
           localizer={localizer}
           scrollToTime={scrollToTime}
         />

@@ -382,12 +382,10 @@ export default function (DateTime, { firstDayOfWeek = 7 } = {}) {
     },
 
     formats,
-
     firstOfWeek,
     firstVisibleDay,
     lastVisibleDay,
     visibleDays,
-
     lt,
     lte,
     gt,
@@ -404,7 +402,6 @@ export default function (DateTime, { firstDayOfWeek = 7 } = {}) {
     ceil,
     min,
     max,
-
     getSlotDate,
     getTotalMin,
     getMinutesFromMidnight,

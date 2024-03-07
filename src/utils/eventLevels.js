@@ -12,7 +12,6 @@ export function endOfRange({ dateRange, unit = 'day', localizer }) {
 export function eventSegments(event, range, accessors, localizer) {
   let { first, last } = endOfRange({ dateRange: range, localizer })
 
-  let slots = localizer.diff(first, last, 'day')
   let start = localizer.max(
     localizer.startOf(accessors.start(event), 'day'),
     first
@@ -22,10 +21,10 @@ export function eventSegments(event, range, accessors, localizer) {
   let padding = findIndex(range, (x) => localizer.isSameDate(x, start))
   let span = localizer.diff(start, end, 'day')
 
-  span = Math.min(span, slots)
-  // The segmentOffset is necessary when adjusting for timezones
-  // ahead of the browser timezone
-  span = Math.max(span - localizer.segmentOffset, 1)
+  // span = Math.min(span, slots)
+  // // The segmentOffset is necessary when adjusting for timezones
+  // // ahead of the browser timezone
+  // span = Math.max(span - localizer.segmentOffset, 1)
 
   return {
     event,

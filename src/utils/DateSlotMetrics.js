@@ -4,11 +4,21 @@ import { eventSegments, endOfRange, eventLevels } from './eventLevels'
 let isSegmentInSlot = (seg, slot) => seg.left <= slot && seg.right >= slot
 
 const isEqual = (a, b) =>
-  a[0].range === b[0].range && a[0].events === b[0].events
+  a[0].range === b[0].range &&
+  a[0].events === b[0].events &&
+  a[0].maxRows === b[0].maxRows
 
 export function getSlotMetrics() {
   return memoize((options) => {
-    const { range, events, maxRows, minRows, accessors, localizer } = options
+    const {
+      range,
+      events,
+      maxRows,
+      minRows,
+      accessors,
+      localizer,
+      maxRowsStatic,
+    } = options
     let { first, last } = endOfRange({ dateRange: range, localizer })
 
     let segments = events.map((evt) =>
@@ -16,6 +26,11 @@ export function getSlotMetrics() {
     )
 
     let { levels, extra } = eventLevels(segments, Math.max(maxRows - 1, 1))
+    let { extra: extraStatic } = eventLevels(
+      segments,
+      Math.max(maxRowsStatic - 1, 1)
+    )
+
     // Subtract 1 from minRows to not include showMore button row when
     // it would be rendered
     const minEventRows = extra.length > 0 ? minRows - 1 : minRows
@@ -24,7 +39,7 @@ export function getSlotMetrics() {
     return {
       first,
       last,
-
+      extraStatic,
       levels,
       extra,
       range,
@@ -32,6 +47,7 @@ export function getSlotMetrics() {
 
       clone(args) {
         const metrics = getSlotMetrics()
+
         return metrics({ ...options, ...args })
       },
 

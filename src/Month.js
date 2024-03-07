@@ -3,8 +3,9 @@ import PropTypes from 'prop-types'
 import clsx from 'clsx'
 
 import chunk from 'lodash/chunk'
+import debounce from 'lodash/debounce'
 
-import { navigate, views } from './utils/constants'
+import { navigate } from './utils/constants'
 import { notify } from './utils/helpers'
 import getPosition from 'dom-helpers/position'
 import * as animationFrame from 'dom-helpers/animationFrame'
@@ -44,6 +45,10 @@ class MonthView extends React.Component {
     }
   }
 
+  callMeasureRowLimitOnResize = debounce(function () {
+    this.measureRowLimit(this.props)
+  }, 300)
+
   componentDidMount() {
     let running
 
@@ -52,6 +57,8 @@ class MonthView extends React.Component {
     window.addEventListener(
       'resize',
       (this._resizeListener = () => {
+        this.callMeasureRowLimitOnResize()
+
         if (!running) {
           animationFrame.request(() => {
             running = false
@@ -273,7 +280,9 @@ class MonthView extends React.Component {
   measureRowLimit() {
     this.setState({
       needLimitMeasure: false,
-      rowLimit: this.slotRowRef.current.getRowLimit(),
+      rowLimit: this.slotRowRef.current.getRowLimit(
+        this.slotRowRef.current?.headingRowRef?.current
+      ),
     })
   }
 
@@ -306,13 +315,7 @@ class MonthView extends React.Component {
   }
 
   handleShowMore = (events, date, cell, slot, target) => {
-    const {
-      popup,
-      onDrillDown,
-      onShowMore,
-      getDrilldownView,
-      doShowMoreDrillDown,
-    } = this.props
+    const { popup, onDrillDown, onShowMore, doShowMoreDrillDown } = this.props
     //cancel any pending selections so only the event click goes through.
     this.clearSelection()
 
@@ -323,7 +326,7 @@ class MonthView extends React.Component {
         overlay: { date, events, position, target },
       })
     } else if (doShowMoreDrillDown) {
-      notify(onDrillDown, [date, getDrilldownView(date) || views.DAY])
+      notify(onDrillDown, [])
     }
 
     notify(onShowMore, [events, date, slot])

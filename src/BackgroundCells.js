@@ -62,7 +62,7 @@ class BackgroundCells extends React.Component {
                     localizer.neq(currentDate, date, 'month') &&
                     'rbc-off-range-bg'
                 )}
-              />
+              ></div>
             </Wrapper>
           )
         })}
